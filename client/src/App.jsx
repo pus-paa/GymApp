@@ -1,0 +1,76 @@
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Header, Footer, ScrollButton, PrivateRoute, AdminRoute } from "./components";
+import { Register, Login, ForgotPassword, Home, PlanSubscription, Error, Exercise, ExerciseDetail, Profile, UserDashBoard, PlanDetail, AdminDashBoard, CreatePlan, UpdatePlan, Plans, SubscriberList, UserList, FavouriteExercises, PlanDetails, PlanFullDetail, ContactUs, Contact, TrainerDetails, Feedback, Feedbacks, FeedbackList} from "./pages";
+import { Toaster } from 'react-hot-toast';
+import { useAuth } from "./context/auth";
+
+const AppContent = () => {
+  const { auth, setAuth } = useAuth();
+  const location = useLocation();
+  
+  // Check if current path is an admin route
+  const isAdminRoute = location.pathname.startsWith('/dashboard/admin');
+
+  return (
+    <>
+      <ScrollButton />
+      <Header />
+      <Toaster />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/exercise' element={auth?.user ? <Exercise /> : <Login />} />
+        <Route path='/exercise/:id' element={auth?.user ? <ExerciseDetail /> : <Login />} />
+        <Route path='/plan-subscribe/:planid' element={<PlanSubscription/>} />
+        <Route path='/plan-detail/:planid' element={<PlanDetails/>} />
+        <Route path='/trainer/:trainerId' element={<TrainerDetails/>} />
+        <Route path='/feedback' element={<Feedback/>} />
+        <Route path='/contact' element={<Contact/>} />
+
+        <Route path='*' element={<Error />} />
+
+        {/* user routes =========================== */}
+        <Route path='/dashboard' element={<PrivateRoute />}>
+          <Route path='user' element={<UserDashBoard />} />
+          <Route path='user/profile' element={<Profile />} />
+          <Route path='user/plan-detail' element={<PlanDetail />} />
+          <Route path='user/plan-detail-full/:planid' element={<PlanFullDetail/>} />
+          <Route path='user/favourite-exercises' element={<FavouriteExercises/>} />
+          <Route path='user/feedbacks' element={<Feedbacks/>} />
+        </Route>
+
+
+        {/* admin routes ================================== */}
+
+        <Route path='/dashboard' element={<AdminRoute />}>
+          <Route path='admin' element={<AdminDashBoard />} />
+          <Route path='admin/profile' element={<Profile />} />
+          <Route path='admin/create-plane' element={<CreatePlan />} />
+          <Route path='admin/plan/:planid' element={<UpdatePlan />} />
+          <Route path='admin/plans' element={<Plans />} />
+          <Route path='admin/user-list' element={<UserList />} />
+          <Route path='admin/contact-us' element={<ContactUs />} />
+          <Route path='admin/subscriber-list' element={<SubscriberList />} />
+          <Route path='admin/feedbacks' element={<FeedbackList />} />
+         
+        </Route>
+
+      </Routes>
+      {!isAdminRoute && <Footer />}
+    </>
+  )
+}
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  )
+}
+
+export default App;
+
+
